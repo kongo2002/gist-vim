@@ -244,7 +244,7 @@ endfunction
 function! s:GistDetectFiletype(gistid)
   let url = 'http://gist.github.com/'.a:gistid
   let res = system('curl -s '.url)
-  let res = substitute(res, '^.*<div class="meta">[\r\n ]*<div class="info">[\r\n ]*<span>\([^>]\+\)</span>.*$', '\1', '')
+  let res = substitute(res, '^.*<div class="meta[^"]*">\_s*<div class="info">\_s*<span[^>]*>\([^>]\+\)<.*$', '\1', '')
   let res = substitute(res, '.*\(\.[^\.]\+\)$', '\1', '')
   if res =~ '^\.'
     silent! exec "doau BufRead *".res
