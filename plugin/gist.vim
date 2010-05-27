@@ -1,8 +1,8 @@
 "=============================================================================
 " File: gist.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 28-Mar-2010.
-" Version: 3.4
+" Last Change: 13-May-2010.
+" Version: 3.6
 " WebPage: http://github.com/mattn/gist-vim/tree/master
 " Usage:
 "
@@ -243,9 +243,20 @@ endfunction
 
 function! s:GistDetectFiletype(gistid)
   let url = 'http://gist.github.com/'.a:gistid
+  let mx = '^.*<div class="data syntax type-\([^"]\+\)">.*$'
   let res = system('curl -s '.url)
-  let res = substitute(res, '^.*<div class="meta[^"]*">\_s*<div class="info">\_s*<span[^>]*>\([^>]\+\)<.*$', '\1', '')
+  let res = substitute(matchstr(res, mx), mx, '\1', '')
   let res = substitute(res, '.*\(\.[^\.]\+\)$', '\1', '')
+  let res = substitute(res, '-', '', 'g')
+  " TODO: more filetype detection that is specified in html.
+  if res == 'bat' | let res = 'dosbatch' | endif
+  if res == 'as' | let res = 'actionscript' | endif
+  if res == 'bash' | let res = 'sh' | endif
+  if res == 'cl' | let res = 'lisp' | endif
+  if res == 'rb' | let res = 'ruby' | endif
+  if res == 'viml' | let res = 'vim' | endif
+  if res == 'plain' || res == 'text' | let res = '' | endif
+
   if res =~ '^\.'
     silent! exec "doau BufRead *".res
   else
